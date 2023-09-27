@@ -7,6 +7,7 @@ use AllowDynamicProperties;
 use Illuminate\Support\Str;
 use IuguLaravel\Http\ClientHttp;
 use IuguLaravel\Http\ResponseHttp;
+use Illuminate\Database\Eloquent\Model;
 
 #[AllowDynamicProperties]
 abstract class Builder
@@ -129,12 +130,12 @@ abstract class Builder
      * Pt:
      * Configura as configurações de persistência local de dados.
      *
-     * @param string $model
+     * @param Model $model
      * @param array $map
      * @param array $data
      * @return self
      */
-    public function setLocalPersistenceConfig(string $model, array $map = [], array $data = []): self
+    public function setLocalPersistenceConfig(Model $model, array $map = [], array $data = []): self
     {
         $this->persistence->model = $model;
         $this->persistence->map = $map;
@@ -150,11 +151,11 @@ abstract class Builder
      * Persiste dados localmente.
      *
      * @param object|null $attributes
-     * @return mixed
+     * @return Model
      */
-    public function saveLocally(?object $attributes = null)
+    public function saveLocally(?object $attributes = null): Model
     {
-        $model = new ($this->persistence->model)();
+        $model = $this->persistence->model;
         $data = $attributes ?? $this->data;
         $data->gatewayColumn = 'iugu';
 
