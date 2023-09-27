@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
  * A classe `ResponseHttp` representa uma resposta HTTP recebida de uma API externa. Ela encapsula o status da resposta,
  * seu conteúdo e fornece acesso a um modelo local para processamento adicional.
  *
- * @package Escavador\Libraries\IuguPhp\Src\Http
+ * @package IuguLaravel\Http
  */
 class ResponseHttp
 {
@@ -49,14 +49,11 @@ class ResponseHttp
      * Pt:
      * Um modelo local associado à resposta para processamento adicional, como mapeamento de dados ou armazenamento em banco de dados.
      *
-     * @var Model $localModel
      */
     protected Model $localModel;
 
     /**
      * ResponseHttp constructor.
-     *
-     * @param ResponseInterface $response
      */
     public function __construct(ResponseInterface $response)
     {
@@ -66,9 +63,6 @@ class ResponseHttp
 
     /**
      * Magic method for getting class properties.
-     *
-     * @param string $name
-     * @return mixed
      */
     public function __get(string $name): mixed
     {
@@ -77,9 +71,6 @@ class ResponseHttp
 
     /**
      * Magic method for setting class properties.
-     *
-     * @param string $name
-     * @param mixed $value
      */
     public function __set(string $name, mixed $value): void
     {
