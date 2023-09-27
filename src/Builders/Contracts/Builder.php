@@ -152,7 +152,7 @@ abstract class Builder
      * @param object|null $attributes
      * @return mixed
      */
-    public function persistLocally(?object $attributes = null)
+    public function saveLocally(?object $attributes = null)
     {
         $model = new ($this->persistence->model)();
         $data = $attributes ?? $this->data;
