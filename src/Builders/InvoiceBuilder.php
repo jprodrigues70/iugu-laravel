@@ -7,14 +7,14 @@ use IuguLaravel\Builders\Contracts\Builder;
 use IuguLaravel\Http\ResponseHttp;
 
 /**
- * Class FaturaBuilder
+ * Class InvoiceBuilder
  *
  * En:
- * The `FaturaBuilder` class is responsible for building and interacting with Iugu invoices.
+ * The `InvoiceBuilder` class is responsible for building and interacting with Iugu invoices.
  * It allows you to create, cancel, capture, refund, and duplicate invoices, as well as set invoice items and payer information.
  *
  * Pt:
- * A classe `FaturaBuilder` é responsável por construir e interagir com faturas da Iugu.
+ * A classe `InvoiceBuilder` é responsável por construir e interagir com faturas da Iugu.
  * Ela permite criar, cancelar, capturar, reembolsar e duplicar faturas, além de definir itens da fatura e informações do pagador.
  *
  * @package IuguLaravel\Builders
