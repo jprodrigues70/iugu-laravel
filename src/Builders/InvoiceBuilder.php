@@ -2,9 +2,7 @@
 
 namespace IuguLaravel\Builders;
 
-use Exception;
 use IuguLaravel\Builders\Contracts\Builder;
-use IuguLaravel\Http\ResponseHttp;
 
 /**
  * Class InvoiceBuilder
@@ -22,6 +20,15 @@ use IuguLaravel\Http\ResponseHttp;
 class InvoiceBuilder extends Builder
 {
     protected string $endpoint = "/v1/invoices";
+
+    protected array $requiredFields = [
+        'create' => [
+            "due_date",
+            "email",
+            "items",
+            "payer"
+        ]
+    ];
 
     /**
      * En:
@@ -58,38 +65,5 @@ class InvoiceBuilder extends Builder
             "cpf_cnpj" => $documentNumber
         ];
         return $this;
-    }
-
-    /**
-     * En:
-     * Create a new invoice based on the provided data.
-     *
-     * Pt:
-     * Crie uma nova fatura com base nos dados fornecidos.
-     *
-     * @link https://dev.iugu.com/reference/criar-fatura
-     */
-    public function create(): ResponseHttp
-    {
-        $requiredFields = [
-            "due_date",
-            "email",
-            "items",
-            "payer"
-        ];
-
-        foreach ($requiredFields as $field) {
-            if (empty($this->data->{$field})) {
-                throw new Exception("$field is required");
-            }
-        }
-
-        $result = $this->api->post(path: $this->endpoint, data: get_object_vars($this->data));
-
-        if ($result?->status === 200 && $result?->content && $this->persistence?->model) {
-            $result->localModel = $this->saveLocally(attributes: $result->content);
-        }
-
-        return $result;
     }
 }

@@ -3,6 +3,7 @@
 namespace IuguLaravel\Builders\Contracts;
 
 use stdClass;
+use Exception;
 use AllowDynamicProperties;
 use Illuminate\Support\Str;
 use IuguLaravel\Http\ClientHttp;
@@ -170,5 +171,30 @@ abstract class Builder
         $model->save();
 
         return $model;
+    }
+
+
+    /**
+     * En:
+     * Create a new instance based on the provided data.
+     *
+     * Pt:
+     * Crie uma nova instâncoa com base nos dados fornecidos.
+     */
+    public function create(): ResponseHttp
+    {
+        foreach ($this->requiredFields as $field) {
+            if (empty($this->data->{$field})) {
+                throw new Exception("$field is required");
+            }
+        }
+
+        $result = $this->api->post(path: $this->endpoint, data: get_object_vars($this->data));
+
+        if ($result?->status === 200 && $result?->content && $this->persistence?->model) {
+            $result->localModel = $this->saveLocally(attributes: $result->content);
+        }
+
+        return $result;
     }
 }
