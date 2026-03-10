@@ -138,3 +138,58 @@ $invoice = (new InvoiceBuilder())
     ->addPixAdditionalInfo('produto', 'Plano Pro')
     ->create();
 ```
+
+## Reembolso de fatura
+
+Reembolso total por ID da fatura:
+
+```php
+$result = (new InvoiceBuilder())
+    ->refundById('EBB161AAB22849BFA047D5F1DF55AEE9');
+```
+
+Reembolso parcial por ID da fatura:
+
+```php
+$result = (new InvoiceBuilder())
+    ->partialRefundById('EBB161AAB22849BFA047D5F1DF55AEE9', 500);
+```
+
+Reembolso da fatura já carregada no builder:
+
+```php
+$result = (new InvoiceBuilder('EBB161AAB22849BFA047D5F1DF55AEE9'))
+    ->refund();
+```
+
+## Cancelamento de fatura
+
+Cancelamento por ID da fatura:
+
+```php
+$result = (new InvoiceBuilder())
+    ->cancelById('EBB161AAB22849BFA047D5F1DF55AEE9');
+```
+
+Cancelamento da fatura já carregada no builder:
+
+```php
+$result = (new InvoiceBuilder('EBB161AAB22849BFA047D5F1DF55AEE9'))
+    ->cancel();
+```
+
+## Captura de fatura
+
+Captura por ID da fatura:
+
+```php
+$result = (new InvoiceBuilder())
+    ->captureById('EBB161AAB22849BFA047D5F1DF55AEE9');
+```
+
+Captura da fatura já carregada no builder:
+
+```php
+$result = (new InvoiceBuilder('EBB161AAB22849BFA047D5F1DF55AEE9'))
+    ->capture();
+```

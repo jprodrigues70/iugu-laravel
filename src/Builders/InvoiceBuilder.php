@@ -325,6 +325,108 @@ class InvoiceBuilder extends Builder
         return parent::create();
     }
 
+    /**
+     * Efetua o reembolso de uma fatura pelo ID.
+     */
+    public function refundById(string $invoiceId, ?int $partialValueRefundCents = null): ResponseHttp
+    {
+        $invoiceId = trim($invoiceId);
+
+        if ($invoiceId === '') {
+            throw new Exception('invoiceId is required');
+        }
+
+        $payload = [];
+
+        if ($partialValueRefundCents !== null) {
+            if ($partialValueRefundCents < 1) {
+                throw new Exception('partial_value_refund_cents must be greater than 0');
+            }
+
+            $payload['partial_value_refund_cents'] = $partialValueRefundCents;
+        }
+
+        return $this->api->post(path: "{$this->endpoint}/{$invoiceId}/refund", data: $payload);
+    }
+
+    /**
+     * Efetua o reembolso da fatura carregada no builder.
+     */
+    public function refund(?int $partialValueRefundCents = null): ResponseHttp
+    {
+        $invoiceId = (string) ($this->data->id ?? '');
+
+        if ($invoiceId === '') {
+            throw new Exception('Invoice id is required. Use refundById() or instantiate InvoiceBuilder with an id.');
+        }
+
+        return $this->refundById($invoiceId, $partialValueRefundCents);
+    }
+
+    /**
+     * Atalho explícito para reembolso parcial.
+     */
+    public function partialRefundById(string $invoiceId, int $partialValueRefundCents): ResponseHttp
+    {
+        return $this->refundById($invoiceId, $partialValueRefundCents);
+    }
+
+    /**
+     * Cancela uma fatura pelo ID.
+     */
+    public function cancelById(string $invoiceId): ResponseHttp
+    {
+        $invoiceId = trim($invoiceId);
+
+        if ($invoiceId === '') {
+            throw new Exception('invoiceId is required');
+        }
+
+        return $this->api->put(path: "{$this->endpoint}/{$invoiceId}/cancel");
+    }
+
+    /**
+     * Cancela a fatura carregada no builder.
+     */
+    public function cancel(): ResponseHttp
+    {
+        $invoiceId = (string) ($this->data->id ?? '');
+
+        if ($invoiceId === '') {
+            throw new Exception('Invoice id is required. Use cancelById() or instantiate InvoiceBuilder with an id.');
+        }
+
+        return $this->cancelById($invoiceId);
+    }
+
+    /**
+     * Captura uma fatura pelo ID.
+     */
+    public function captureById(string $invoiceId): ResponseHttp
+    {
+        $invoiceId = trim($invoiceId);
+
+        if ($invoiceId === '') {
+            throw new Exception('invoiceId is required');
+        }
+
+        return $this->api->post(path: "{$this->endpoint}/{$invoiceId}/capture");
+    }
+
+    /**
+     * Captura a fatura carregada no builder.
+     */
+    public function capture(): ResponseHttp
+    {
+        $invoiceId = (string) ($this->data->id ?? '');
+
+        if ($invoiceId === '') {
+            throw new Exception('Invoice id is required. Use captureById() or instantiate InvoiceBuilder with an id.');
+        }
+
+        return $this->captureById($invoiceId);
+    }
+
     private function validateCreatePayload(): void
     {
         $this->validateDueDate();
