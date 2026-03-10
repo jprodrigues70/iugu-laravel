@@ -14,5 +14,9 @@
       "email": "70jprodrigues@gmail.com"
     }
   ],
-  "require": {}
+  "require": {
+    "guzzlehttp/guzzle": "^7.0",
+    "illuminate/database": "^10.0|^11.0|^12.0",
+    "illuminate/support": "^10.0|^11.0|^12.0"
+  }
 }

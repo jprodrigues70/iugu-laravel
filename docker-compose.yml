@@ -1,0 +1,37 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iugu-laravel-dev
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      IUGU_APIKEY: ${IUGU_APIKEY:-}
+      COMPOSER_ALLOW_SUPERUSER: "1"
+      GIT_CONFIG_COUNT: "1"
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: /app
+    stdin_open: true
+    tty: true
+
+  ci:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      COMPOSER_ALLOW_SUPERUSER: "1"
+      GIT_CONFIG_COUNT: "1"
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: /app
+    command: >
+      sh -lc "
+      composer install --no-interaction --prefer-dist &&
+      composer validate --no-check-publish
+      "
+    profiles:
+      - test
