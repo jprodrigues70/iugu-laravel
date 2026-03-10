@@ -14,6 +14,13 @@ use Illuminate\Database\Eloquent\Model;
 abstract class Builder
 {
     /**
+     * Lista de campos obrigatórios por operação.
+     *
+     * @var array<string, array<int, string>>
+     */
+    protected array $requiredFields = [];
+
+    /**
      * En:
      * The data property stores retrieved data from external sources, such as APIs.
      *
@@ -183,15 +190,25 @@ abstract class Builder
      */
     public function create(): ResponseHttp
     {
-        foreach ($this->requiredFields as $field) {
-            if (empty($this->data->{$field})) {
+        $requiredFields = $this->requiredFields['create'] ?? [];
+
+        foreach ($requiredFields as $field) {
+            $value = $this->data->{$field} ?? null;
+
+            if (
+                $value === null
+                || $value === ''
+                || (is_array($value) && empty($value))
+            ) {
                 throw new Exception("$field is required");
             }
         }
 
         $result = $this->api->post(path: $this->endpoint, data: get_object_vars($this->data));
 
-        if ($result?->status === 200 && $result?->content && $this->persistence?->model) {
+        $hasPersistenceModel = isset($this->persistence->model) && $this->persistence->model instanceof Model;
+
+        if (in_array($result->status, [200, 201], true) && $result->content && $hasPersistenceModel) {
             $result->localModel = $this->saveLocally(attributes: $result->content);
         }
 
