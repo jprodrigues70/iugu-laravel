@@ -75,3 +75,66 @@ $result = $invoice
     )
     ->create();
 ```
+
+## Criação de fatura (payload completo)
+
+```php
+$invoice = (new InvoiceBuilder())
+    ->setEmail('cliente@empresa.com')
+    ->setDueDate('2026-03-20')
+    ->setCcEmails('financeiro@empresa.com,contato@empresa.com')
+    ->setEnsureWorkdayDueDate(true)
+    ->setExpiresIn('5')
+    ->setBankSlipExtraDue('2')
+    ->setPayableWith(['all'])
+    ->setItem(description: 'Plano Pro', quantity: 1, priceCents: 15900)
+    ->setPayer(
+        name: 'Maria Silva',
+        documentNumber: '12345678901',
+        extra: [
+            'email' => 'cliente@empresa.com',
+            'phone_prefix' => '11',
+            'phone' => '999999999',
+        ]
+    )
+    ->setPayerAddress([
+        'zip_code' => '01310100',
+        'street' => 'Av Paulista',
+        'number' => '1000',
+        'district' => 'Bela Vista',
+        'city' => 'Sao Paulo',
+        'state' => 'SP',
+        'country' => 'Brasil',
+        'complement' => 'Conj 101',
+    ])
+    ->setCustomerId('CUSTOMER_ID')
+    ->setReturnUrl('https://empresa.com/pagamento/sucesso')
+    ->setExpiredUrl('https://empresa.com/pagamento/expirado')
+    ->setNotificationUrl('https://empresa.com/webhooks/iugu')
+    ->setIgnoreCanceledEmail(true)
+    ->setIgnoreDueEmail(false)
+    ->setFines(true)
+    ->setLatePaymentFine(2)
+    ->setPerDayInterest(true)
+    ->setPerDayInterestValue(1)
+    ->setDiscountCents(500)
+    ->setOrderId('ORDER-123')
+    ->setExternalReference('REF-123')
+    ->setMaxInstallmentsValue(6)
+    ->setSoftDescriptorLight('EMPRESA')
+    ->addCustomVariable('pedido', 'ORDER-123')
+    ->addEarlyPaymentDiscount(days: 5, percent: 3)
+    ->addSplit([
+        'recipient_account_id' => 'ACCOUNT_SPLIT_ID',
+        'percent' => 5.5,
+        'permit_aggregated' => true,
+    ])
+    ->setAutomaticPix([
+        'journey' => 3,
+        'frequency' => 'monthly',
+        'recurrence_beginning' => '2026-04-01',
+        'contract_number' => 'CTR-001',
+    ])
+    ->addPixAdditionalInfo('produto', 'Plano Pro')
+    ->create();
+```
