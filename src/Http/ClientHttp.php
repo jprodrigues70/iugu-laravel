@@ -3,7 +3,7 @@
 namespace IuguLaravel\Http;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
+use InvalidArgumentException;
 
 /**
  * Class ClientHttp
@@ -27,16 +27,14 @@ class ClientHttp
      * Pt:
      * A instância do cliente HTTP Guzzle usada para fazer requisições HTTP.
      */
-    protected $guzzleClient;
+    protected Client $guzzleClient;
 
     /**
-     * En:
-     * The response from the last HTTP request made by the client.
+     * Cabeçalhos padrão enviados em todas as requisições.
      *
-     * Pt:
-     * A resposta da última requisição HTTP feita pelo cliente.
+     * @var array<string, string>
      */
-    protected $response = null;
+    protected array $defaultHeaders;
 
     /**
      * ClientHttp constructor.
@@ -47,14 +45,22 @@ class ClientHttp
      * Pt:
      * Cria uma nova instância da classe `ClientHttp`.
      */
-    public function __construct()
+    public function __construct(?Client $guzzleClient = null, ?string $apiKey = null, string $baseUri = 'https://api.iugu.com')
     {
-        $this->guzzleClient = new Client([
-            'base_uri' => 'https://api.iugu.com',
-            'headers' => [
-                'Authorization' => 'Basic ' . base64_encode(getenv('IUGU_APIKEY') . ':'),
-                'Accept' => 'application/json',
-            ],
+        $apiKey = $apiKey ?? getenv('IUGU_APIKEY') ?: null;
+
+        if (!$apiKey) {
+            throw new InvalidArgumentException('IUGU_APIKEY is not configured.');
+        }
+
+        $this->defaultHeaders = [
+            'Authorization' => 'Basic ' . base64_encode($apiKey . ':'),
+            'Accept' => 'application/json',
+        ];
+
+        $this->guzzleClient = $guzzleClient ?? new Client([
+            'base_uri' => $baseUri,
+            'headers' => $this->defaultHeaders,
         ]);
     }
 
@@ -69,28 +75,23 @@ class ClientHttp
      * @param array $headers
      * @param integer|null $timeout
      * @return ResponseHttp
-     * @throws RequestException
      */
     private function sendRequest(string $method, string $path, array $data = [], array $headers = [], int $timeout = null): ResponseHttp
     {
-        try {
-            $options = [
-                'headers' => $headers,
-            ];
+        $options = [
+            'headers' => array_merge($this->defaultHeaders, $headers),
+        ];
 
-            if (!empty($data)) {
-                $options['json'] = $data;
-            }
-
-            if ($timeout) {
-                $options['timeout'] = $timeout;
-            }
-
-            $response = $this->guzzleClient->request($method, $path, $options);
-            return new ResponseHttp($response);
-        } catch (RequestException $e) {
-            throw $e;
+        if (!empty($data)) {
+            $options['json'] = $data;
         }
+
+        if ($timeout) {
+            $options['timeout'] = $timeout;
+        }
+
+        $response = $this->guzzleClient->request($method, $path, $options);
+        return new ResponseHttp($response);
     }
 
     /**

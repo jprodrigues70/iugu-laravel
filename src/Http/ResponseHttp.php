@@ -40,7 +40,7 @@ class ResponseHttp
      *
      * @var object $content
      */
-    protected object $content;
+    protected mixed $content;
 
     /**
      * En:
@@ -50,7 +50,7 @@ class ResponseHttp
      * Um modelo local associado à resposta para processamento adicional, como mapeamento de dados ou armazenamento em banco de dados.
      *
      */
-    protected Model $localModel;
+    protected ?Model $localModel = null;
 
     /**
      * ResponseHttp constructor.
@@ -58,7 +58,11 @@ class ResponseHttp
     public function __construct(ResponseInterface $response)
     {
         $this->status = $response->getStatusCode();
-        $this->content = json_decode($response->getBody()->getContents());
+        $body = $response->getBody()->getContents();
+        $decoded = json_decode($body);
+
+        // Mantem o body bruto quando a API não retorna JSON válido.
+        $this->content = json_last_error() === JSON_ERROR_NONE ? $decoded : $body;
     }
 
     /**
