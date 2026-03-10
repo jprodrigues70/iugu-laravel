@@ -21,11 +21,8 @@ class SubscriptionBuilder extends Builder
 
     protected array $requiredFields = [
         'create' => [
-            "name",
-            "identifier",
-            "interval",
-            "interval_type",
-            "value_cents",
+            "customer_id",
+            "plan_identifier",
         ]
     ];
 }
